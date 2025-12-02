@@ -1,3 +1,10 @@
+using APIUsuarios.Application.Interfaces;
+using APIUsuarios.Domain.Entities;
+using APIUsuarios.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace APIUsuarios.Infrastructure.Repositories;
+
 public class UsuarioRepository : IUsuarioRepository
 {
     private readonly AppDbContext _db;

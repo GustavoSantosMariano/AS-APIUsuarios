@@ -1,3 +1,8 @@
+using APIUsuarios.Application.DTOs;
+using APIUsuarios.Application.DTOs;
+
+namespace APIUsuarios.Application.Interfaces;
+
 public interface IUsuarioService
 {
     Task<IEnumerable<UsuarioReadDto>> ListarAsync(CancellationToken ct);

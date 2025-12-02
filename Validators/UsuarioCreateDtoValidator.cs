@@ -1,3 +1,9 @@
+using APIUsuarios.Application.DTOs;
+using FluentValidation;
+using System.Text.RegularExpressions;
+
+namespace APIUsuarios.Application.Validators;
+
 public class UsuarioCreateDtoValidator : AbstractValidator<UsuarioCreateDto>
 {
     public UsuarioCreateDtoValidator()

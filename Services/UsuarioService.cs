@@ -1,3 +1,9 @@
+using APIUsuarios.Application.DTOs;
+using APIUsuarios.Application.Interfaces;
+using APIUsuarios.Domain.Entities;
+
+namespace APIUsuarios.Application.Services;
+
 public class UsuarioService : IUsuarioService
 {
     private readonly IUsuarioRepository _repo;

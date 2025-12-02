@@ -1,3 +1,8 @@
+using APIUsuarios.Domain.Entities;
+using APIUsuarios.Domain.Entities;
+
+namespace APIUsuarios.Application.Interfaces;
+
 public interface IUsuarioRepository
 {
     Task<IEnumerable<Usuario>> GetAllAsync(CancellationToken ct);

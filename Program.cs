@@ -1,41 +1,80 @@
+using APIUsuarios.Application.Interfaces;
+using APIUsuarios.Application.Services;
+using APIUsuarios.Application.Validators;
+using APIUsuarios.Infrastructure.Persistence;
+using APIUsuarios.Infrastructure.Repositories;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<UsuarioCreateDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+app.MapGet("/usuarios", async (IUsuarioService service, CancellationToken ct)
+    => Results.Ok(await service.ListarAsync(ct)));
+
+app.MapGet("/usuarios/{id:int}", async (int id, IUsuarioService service, CancellationToken ct) =>
 {
-    app.MapOpenApi();
-}
+    var usuario = await service.ObterAsync(id, ct);
+    return usuario is null ? Results.NotFound() : Results.Ok(usuario);
+});
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+app.MapPost("/usuarios", async (UsuarioCreateDto dto, IUsuarioService service, CancellationToken ct) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    try
+    {
+        var created = await service.CriarAsync(dto, ct);
+        return Results.Created($"/usuarios/{created.Id}", created);
+    }
+    catch (Exception ex)
+    {
+        if (ex.Message.Contains("Email já cadastrado"))
+            return Results.Conflict(ex.Message);
 
-app.MapGet("/weatherforecast", () =>
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+app.MapPut("/usuarios/{id:int}", async (int id, UsuarioUpdateDto dto, IUsuarioService service, CancellationToken ct) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    try
+    {
+        var updated = await service.AtualizarAsync(id, dto, ct);
+        return Results.Ok(updated);
+    }
+    catch (Exception ex)
+    {
+        if (ex.Message.Contains("não encontrado"))
+            return Results.NotFound();
 
-app.Run();
+        if (ex.Message.Contains("Email já cadastrado"))
+            return Results.Conflict(ex.Message);
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+app.MapDelete("/usuarios/{id:int}", async (int id, IUsuarioService service, CancellationToken ct) =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    var ok = await service.RemoverAsync(id, ct);
+    return ok ? Results.NoContent() : Results.NotFound();
+});
+
+await app.RunAsync();

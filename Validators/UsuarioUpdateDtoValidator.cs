@@ -1,3 +1,8 @@
+using APIUsuarios.Application.DTOs;
+using FluentValidation;
+
+namespace APIUsuarios.Application.Validators;
+
 public class UsuarioUpdateDtoValidator : AbstractValidator<UsuarioUpdateDto>
 {
     public UsuarioUpdateDtoValidator()
