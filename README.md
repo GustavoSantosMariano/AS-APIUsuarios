@@ -1,4 +1,5 @@
 # AS-APIUsuarios
+
 Descrição
 
 Breve descrição do projeto (2-3 parágrafos)
@@ -40,14 +41,18 @@ Execute a aplicação
 
 Exemplos de Requisições
 
-(Incluir exemplos curl ou JSON)
+(Incluir exemplos JSON)
 
 Estrutura do Projeto
 
 Explicação das pastas e arquivos
 
+
+Nâo fiz  video pois nao consegui usar  postman de forma auguma
+
+
 Autor
 
-Seu nome completo
-RA: Seu RA
-Curso: [Nome do curso]
+Seu Gustavo dos Santos Mariano
+RA: 2025001085
+Curso: Analise Desenvolvimanto de Sistemas
